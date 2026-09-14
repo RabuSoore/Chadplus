@@ -1,0 +1,20 @@
+name: ChadPLUS
+version: 1.0.0
+main: com.rabusoore.chadplus.Main
+api-version: '1.21'
+author: rabusoore
+softdepend: [LuckPerms, Essentials]
+
+commands:
+  chat:
+    description: Main chat control command
+    aliases: [clearchat]
+    permission: chadplus.use.clearchat
+  broadcast:
+    description: Manual and system broadcast management
+    aliases: [bc]
+    permission: chadplus.admin.broadcast.send
+  autobroadcast:
+    description: Toggle automatic timed broadcasts
+    aliases: [abc]
+    permission: chadplus.admin.autobroadcast
