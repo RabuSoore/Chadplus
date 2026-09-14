@@ -1,0 +1,38 @@
+settings:
+  enabled: true
+  mode: "SEQUENTIAL" # Options: SEQUENTIAL or RANDOM
+  global-interval: 60 # Default loop interval in seconds
+
+broadcasts:
+  welcome-announcement:
+    interval: 60
+    sound:
+      enabled: true
+      name: "entity.player.levelup"
+      volume: 1.0
+      pitch: 1.0
+    display: "CHAT" # Options: CHAT, ACTION_BAR, TITLE
+    message:
+      - "<gradient:#FF5555:#FFAA00><bold>ChadPLUS</bold></gradient> &7» Welcome to our server!"
+      - "&7Be sure to read the rules and have fun!"
+  discord-promo:
+    interval: 120
+    sound:
+      enabled: true
+      name: "block.note_block.chime"
+      volume: 0.8
+      pitch: 1.2
+    display: "ACTION_BAR"
+    message:
+      - "&bJoin our Discord community: &e&ndiscord.gg/example"
+  store-info:
+    interval: 180
+    sound:
+      enabled: true
+      name: "ui.toast.challenge_complete"
+      volume: 1.0
+      pitch: 1.0
+    display: "TITLE"
+    title: "<gradient:#55FF55:#00AA00>SPECIAL SALE!</gradient>"
+    subtitle: "&7Visit &e&nstore.example.com&7 for 20% off!"
+    message: []
