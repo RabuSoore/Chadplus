@@ -3,7 +3,6 @@ package com.rabusoore.chadplus.command;
 import com.rabusoore.chadplus.Main;
 import com.rabusoore.chadplus.util.ColorUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,35 +40,41 @@ public class ChatCommand implements CommandExecutor, TabCompleter {
                 return handleClear(sender);
             }
             case "on" -> {
-                if (!sender.hasPermission("chadplus.admin.chattoggle")) {
-                    sender.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ColorUtils.parse(prefix + "&cPerintah ini hanya dapat dijalankan oleh player."));
                     return true;
                 }
-                plugin.setChatEnabled(true);
-                String msg = plugin.getFileManager().getConfig().getString("messages.chat-toggled-on", "")
-                        .replace("<player>", sender.getName());
-                Bukkit.broadcast(ColorUtils.parse(prefix + msg));
+                if (!player.hasPermission("chadplus.use.chattoggle")) {
+                    player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                    return true;
+                }
+                plugin.setPlayerChat(player.getUniqueId(), true);
+                player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.chat-personal-toggled-on")));
             }
             case "off" -> {
-                if (!sender.hasPermission("chadplus.admin.chattoggle")) {
-                    sender.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ColorUtils.parse(prefix + "&cPerintah ini hanya dapat dijalankan oleh player."));
                     return true;
                 }
-                plugin.setChatEnabled(false);
-                String msg = plugin.getFileManager().getConfig().getString("messages.chat-toggled-off", "")
-                        .replace("<player>", sender.getName());
-                Bukkit.broadcast(ColorUtils.parse(prefix + msg));
+                if (!player.hasPermission("chadplus.use.chattoggle")) {
+                    player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                    return true;
+                }
+                plugin.setPlayerChat(player.getUniqueId(), false);
+                player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.chat-personal-toggled-off")));
             }
             case "toggle" -> {
-                if (!sender.hasPermission("chadplus.admin.chattoggle")) {
-                    sender.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                if (!(sender instanceof Player player)) {
+                    sender.sendMessage(ColorUtils.parse(prefix + "&cPerintah ini hanya dapat dijalankan oleh player."));
                     return true;
                 }
-                boolean state = !plugin.isChatEnabled();
-                plugin.setChatEnabled(state);
-                String path = state ? "messages.chat-toggled-on" : "messages.chat-toggled-off";
-                String msg = plugin.getFileManager().getConfig().getString(path, "").replace("<player>", sender.getName());
-                Bukkit.broadcast(ColorUtils.parse(prefix + msg));
+                if (!player.hasPermission("chadplus.use.chattoggle")) {
+                    player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString("messages.no-permission")));
+                    return true;
+                }
+                boolean enabled = plugin.togglePlayerChat(player.getUniqueId());
+                String msgKey = enabled ? "messages.chat-personal-toggled-on" : "messages.chat-personal-toggled-off";
+                player.sendMessage(ColorUtils.parse(prefix + plugin.getFileManager().getConfig().getString(msgKey)));
             }
             case "reload" -> {
                 if (!sender.hasPermission("chadplus.admin.reload")) {
@@ -110,7 +115,7 @@ public class ChatCommand implements CommandExecutor, TabCompleter {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             if (sender.hasPermission("chadplus.use.clearchat")) completions.add("clear");
-            if (sender.hasPermission("chadplus.admin.chattoggle")) {
+            if (sender.hasPermission("chadplus.use.chattoggle")) {
                 completions.add("on");
                 completions.add("off");
                 completions.add("toggle");
