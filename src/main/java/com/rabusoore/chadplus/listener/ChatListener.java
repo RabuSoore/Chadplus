@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 
 public class ChatListener implements Listener {
 
@@ -31,15 +30,15 @@ public class ChatListener implements Listener {
         Player player = event.getPlayer();
         String prefix = plugin.getFileManager().getConfig().getString("prefix", "");
 
-        // 1. Mute Check
-        if (!plugin.isChatEnabled() && !player.hasPermission("chadplus.bypass.mute")) {
-            event.setCancelled(true);
-            String mutedMsg = plugin.getFileManager().getConfig().getString("chat.muted-message", "");
-            player.sendMessage(ColorUtils.parse(prefix + mutedMsg));
-            return;
-        }
+        // Filter: Hapus player yang mematikan chat pribadi dari daftar penerima (viewers)
+        event.viewers().removeIf(audience -> {
+            if (audience instanceof Player viewer) {
+                return plugin.isChatDisabledForPlayer(viewer.getUniqueId());
+            }
+            return false;
+        });
 
-        // 2. Cooldown Check
+        // 1. Cooldown Check
         if (!player.hasPermission("chadplus.bypass.cooldown.chat")) {
             long cooldownSec = plugin.getFileManager().getConfig().getLong("cooldowns.chat-seconds", 3);
             long now = System.currentTimeMillis();
@@ -57,7 +56,7 @@ public class ChatListener implements Listener {
 
         String rawMessage = PlainTextComponentSerializer.plainText().serialize(event.message());
 
-        // 3. Duplicate Anti-Spam Check
+        // 2. Duplicate Anti-Spam Check
         if (plugin.getFileManager().getConfig().getBoolean("anti-spam.block-duplicates", true) &&
             !player.hasPermission("chadplus.bypass.cooldown.chat")) {
             String lastMsg = lastMessages.get(player.getUniqueId());
@@ -69,7 +68,7 @@ public class ChatListener implements Listener {
             }
         }
 
-        // 4. Bad Word Filtering Engine
+        // 3. Bad Word Filtering Engine
         if (!player.hasPermission("chadplus.bypass.filter")) {
             FilterResult result = processFilter(rawMessage);
             if (result.blocked()) {
@@ -106,7 +105,6 @@ public class ChatListener implements Listener {
             String token = tokens[i];
             String cleanToken = token.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
 
-            // Tokenized Whitelist check to prevent Scunthorpe Problem
             boolean isWhitelisted = false;
             for (String w : whitelist) {
                 if (cleanToken.equalsIgnoreCase(w.toLowerCase())) {
@@ -133,11 +131,9 @@ public class ChatListener implements Listener {
             }
 
             boolean containsBadWord = false;
-            String matchedBadWord = "";
             for (String bad : badWords) {
                 if (normalized.contains(bad.toLowerCase())) {
                     containsBadWord = true;
-                    matchedBadWord = bad;
                     break;
                 }
             }
