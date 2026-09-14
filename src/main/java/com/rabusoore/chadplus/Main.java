@@ -8,32 +8,32 @@ import com.rabusoore.chadplus.listener.ChatListener;
 import com.rabusoore.chadplus.listener.CommandListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Main extends JavaPlugin {
 
     private static Main instance;
     private FileManager fileManager;
     private BroadcastManager broadcastManager;
-    private boolean chatEnabled = true;
+    
+    // Set untuk menyimpan UUID player yang mematikan chat pribadi
+    private final Set<UUID> disabledChatPlayers = ConcurrentHashMap.newKeySet();
 
     @Override
     public void onEnable() {
         instance = this;
 
-        // 1. Load Configurations
         this.fileManager = new FileManager(this);
         this.fileManager.init();
 
-        this.chatEnabled = this.fileManager.getConfig().getBoolean("chat.enabled", true);
-
-        // 2. Initialize Broadcast Systems
         this.broadcastManager = new BroadcastManager(this);
         this.broadcastManager.loadBroadcasts();
 
-        // 3. Register Event Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         getServer().getPluginManager().registerEvents(new CommandListener(this), this);
 
-        // 4. Register Commands & Tab Completers
         ChatCommand chatCmd = new ChatCommand(this);
         if (getCommand("chat") != null) {
             getCommand("chat").setExecutor(chatCmd);
@@ -50,7 +50,7 @@ public class Main extends JavaPlugin {
             getCommand("autobroadcast").setTabCompleter(bcCmd);
         }
 
-        getLogger().info("ChadPLUS v" + getDescription().getVersion() + " by rabusoore has been enabled successfully.");
+        getLogger().info("ChadPLUS v" + getDescription().getVersion() + " by rabusoore has been enabled.");
     }
 
     @Override
@@ -58,6 +58,7 @@ public class Main extends JavaPlugin {
         if (broadcastManager != null) {
             broadcastManager.cancelTask();
         }
+        disabledChatPlayers.clear();
         getLogger().info("ChadPLUS has been disabled.");
     }
 
@@ -73,12 +74,25 @@ public class Main extends JavaPlugin {
         return broadcastManager;
     }
 
-    public boolean isChatEnabled() {
-        return chatEnabled;
+    public boolean isChatDisabledForPlayer(UUID uuid) {
+        return disabledChatPlayers.contains(uuid);
     }
 
-    public void setChatEnabled(boolean chatEnabled) {
-        this.chatEnabled = chatEnabled;
-        this.fileManager.getConfig().set("chat.enabled", chatEnabled);
+    public void setPlayerChat(UUID uuid, boolean enableChat) {
+        if (enableChat) {
+            disabledChatPlayers.remove(uuid);
+        } else {
+            disabledChatPlayers.add(uuid);
+        }
+    }
+
+    public boolean togglePlayerChat(UUID uuid) {
+        if (disabledChatPlayers.contains(uuid)) {
+            disabledChatPlayers.remove(uuid);
+            return true; // Chat diaktifkan
+        } else {
+            disabledChatPlayers.add(uuid);
+            return false; // Chat dimatikan
+        }
     }
 }
