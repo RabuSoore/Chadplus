@@ -1,0 +1,22 @@
+filter:
+  mode: "CENSOR" # Options: CENSOR or BLOCK
+  replacement-char: "*"
+  normalize-leetspeak: true
+  normalize-unicode: true
+  reduce-repeats: true
+  block-message: "<red>Your message was blocked because it contained prohibited language."
+
+whitelisted-words:
+  - "masuk"
+  - "baso"
+  - "klasik"
+  - "assassin"
+
+prohibited-words:
+  - "asu"
+  - "anjing"
+  - "kontol"
+  - "memek"
+  - "fuck"
+  - "shit"
+  - "bitch"
