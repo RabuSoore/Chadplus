@@ -1,0 +1,27 @@
+prefix: "<gradient:#55FFFF:#00AAAA>[ChadPLUS]</gradient> "
+
+chat:
+  enabled: true
+  muted-message: "<red>Global chat is currently muted by an administrator."
+  clear-chat-lines: 100
+
+cooldowns:
+  chat-seconds: 3
+  command-seconds: 2
+  cooldown-chat-message: "<red>Please wait <seconds>s before chatting again."
+  cooldown-command-message: "<red>Please wait <seconds>s before executing another command."
+
+anti-spam:
+  block-duplicates: true
+  duplicate-message: "<red>You cannot send the exact same message twice in a row!"
+
+messages:
+  no-permission: "<red>You do not have permission to execute this command."
+  chat-cleared-personal: "<green>Your personal chat history has been cleared."
+  chat-toggled-on: "<green>Global chat has been <bold>ENABLED</bold> by <player>."
+  chat-toggled-off: "<red>Global chat has been <bold>DISABLED</bold> by <player>."
+  reload-success: "<green>All ChadPLUS configuration files reloaded successfully!"
+  autobroadcast-enabled: "<green>Automated broadcasts have been resumed."
+  autobroadcast-disabled: "<yellow>Automated broadcasts have been paused."
+  broadcast-played: "<green>Broadcast '<id>' triggered successfully."
+  broadcast-not-found: "<red>Broadcast ID '<id>' not found in broadcasts.yml."
