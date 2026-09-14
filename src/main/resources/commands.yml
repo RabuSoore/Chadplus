@@ -1,0 +1,12 @@
+blocked-commands:
+  - "/plugins"
+  - "/pl"
+  - "/version"
+  - "/ver"
+  - "/about"
+  - "/?"
+  - "/op"
+  - "/deop"
+  - "/luckperms"
+  - "/lp"
+  - "/essentials"
